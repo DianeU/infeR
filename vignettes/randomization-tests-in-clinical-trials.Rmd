@@ -1,0 +1,130 @@
+---
+title: "Randomization tests in clinical trials"
+author: "Diane Uschner"
+date: "6/5/2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Randomization tests in clinical trials}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Randomization tests are non-parametric tests that can be applied in to outcomes of any distribution. They only 
+depend on the act of randomizing the observational units to the different treatment groups. This property is
+helpful for the analysis of clinical trials in small population groups, because the assumptions of parametric
+endpoints are often not met in this situation. Also for larger trials randomization can provide a useful alternative 
+to assess the differences between treatment groups in clinical trials.
+
+## Randomization in clinical trials
+
+Creating a randomization sequence in a clinical trial
+```{r params, message=FALSE}
+library(randomizeR)
+N <- 20
+k <- 4
+# params object represents the randomization procedure
+(params <- pbrPar(bc = rep(k, N/k)))
+```
+
+Create a randomization sequence and plot the random walk that is described by the sequence
+
+```{r create-seq, fig.cap="Observed randomization sequence"}
+(rs <- genSeq(params))
+```
+
+The object rs stores the randomization sequence along with all the information necessary to create it. 
+Formally, rs is an S4 object. The slot M stores the randomization sequence in binary ($K = 2$) or  multinomial ($K>2$) form. The accessor function \texttt{getRandList} gives the randomization sequence as character vector with the group names.
+
+```{r}
+rs@M
+getRandList(rs)
+```
+
+### Visualization of randomization sequences
+
+An illustration of the randomization sequence is created by the \texttt{plotSeq} function:
+
+```{r rs-fig, fig.cap="\\label{fig:rs}Observed randomization sequence", fig.height=7, fig.width=7}
+plotSeq(rs)
+```
+
+The observed sequence is just one of many sequences that could have been used for the trial:
+
+```{r all-sequences, cache=TRUE, fig.cap="\\label{fig:allSeq}All possible randomization sequence", fig.height=7, fig.width=7}
+refSet <- getAllSeq(params)
+plotSeq(refSet, rs = rs@M)
+```
+
+
+## The patients' outcomes
+
+Assume the patient responses are normally distributed, and there is no treatment effect: 
+
+```{r}
+set.seed(1965)
+y <- round(100 * rnorm(N, mean = rs@M))
+head(y)
+```
+
+
+## The test statistic
+
+The infeR package provides many different test statistics. A test statistic is a measure of the
+difference between the treatment groups. The observed test statistic is computed as follows:
+
+```{r}
+library(infeR)
+(S_obs <- testStat(rs@M, y, type = "dm"))
+```
+
+The randomization test consists in estimating how extreme the observed result is. Under the null hypothesis that there is no difference between the treatment groups, the randomized treatment assignments could be switched out. In that case, the observed difference should not be very extreme compared to other randomization sequences. This is illustrated in figure 
+
+```{r test-stat, cache=TRUE, fig.cap="\\label{fig:testStat}Distribution of the difference in means test Statistic", fig.height=7, fig.width=7}
+S <- apply(refSet@M, 1, testStat, y = y, type = "dm")
+
+dist_S <- data.frame(S, 
+                     p = getProb(refSet),
+                     result = factor(abs(S) >= abs(S_obs), labels = c("Less extreme", "More exreme")))
+
+ggplot(dist_S, aes(S, fill = result)) + 
+  geom_histogram(binwidth = 5) + 
+  theme_minimal() + theme(legend.position = "top")
+```
+
+We can calculate the probability to observe a test statistic as as follows:
+
+```{r}
+
+(p = sum(dist_S$p * (abs(S) >= abs(S_obs))))
+
+```
+
+
+
+# Randomization tests in infeR
+
+The same process that we just illustrated are automated in the infeR package.
+
+The first step is to make our data fit the infeR interface.
+
+In randomization based inference, the tupel of randomization sequence \texttt{R} and patient 
+responses \texttt{Y} is considered the observed outcome of the trial. The infeR package has a 
+wrapper function \texttt{genObs} to store the two components in one object:
+
+```{r}
+obs <- genObs(rs, y)
+```
+
+Instead of going through all the steps above, the we can use the wrapper function \texttt{randTest} from the infeR package:
+
+```{r}
+# new in infeR
+randTest(obs, refSet)
+```
+

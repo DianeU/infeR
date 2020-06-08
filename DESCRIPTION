@@ -1,13 +1,35 @@
 Package: infeR
-Title: What the Package Does (One Line, Title Case)
+Title: Randomization Based Inference in Clinical Trials
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Diane",
+           family = "Uschner",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+           email = "diane.uschner@gmail.com",
+           comment = c(ORCID = "https://orcid.org/0000-0002-7858-796X"))
+Description: This package implements functions to conduct randomization tests in clinical trials. 
+    Randomization tests are non-parametric tests that only rely on the randomization distribution 
+    of the test statistic. The randomization distribution is induced by the randomization procedure 
+    of the clinical trial. The infeR package relies heavily on the randomizeR R package. It 
+    implements different test statistics found in the literature and provides a convenient interface 
+    to conduct randomization tests, and simulation studies that use randomization tests.
+License: CC-BY-SA
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.0.2
+VignetteBuilder: knitr
+Suggests: 
+    knitr,
+    rmarkdown
+Imports: 
+    randomizeR
+Collate: 
+    'getBias.R'
+    'getPval.R'
+    'infeR-pckg.R'
+    'observation.R'
+    'util_condRefSet_mv.R'
+    'randTest.R'
+    'readObs.R'
+    'simRT.R'
+    'testStat.R'
