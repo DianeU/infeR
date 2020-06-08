@@ -1,4 +1,4 @@
-#' Randomization based inference for clinical trials
+#' Randomization Based Inference in Clinical Trials
 #'
 #' \tabular{ll}{
 #' Package: \tab infeR \cr
@@ -9,7 +9,12 @@
 #' LazyLoad: \tab yes \cr
 #' }
 #'
-#' This package provides functionality for randomization based inference in clinical trials
+#' This package implements functions to conduct randomization tests in clinical trials.
+#' Randomization tests are non-parametric tests that only rely on the randomization distribution
+#' of the test statistic. The randomization distribution is induced by the randomization procedure
+#' of the clinical trial. The infeR package relies heavily on the randomizeR R package. It
+#' implements different test statistics found in the literature and provides a convenient interface
+#' to conduct randomization tests, and simulation studies that use randomization tests.
 #'
 #'
 #' @docType package
@@ -17,7 +22,7 @@
 #' @aliases infeR
 #' @title Randomization based inference for clinical trials
 #' @author Diane Uschner \email{diane.uschner@@gmail.com}
-#' @references Conditional randomization tests in clinical trials
+#' @references Uschner, D: Randomization based inference in the presence of selection bias. Submitted to Statistics in Medicine, 2020.
 #' @import randomizeR
 #' @import methods
 #' @import snow
