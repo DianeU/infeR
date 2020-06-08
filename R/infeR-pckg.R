@@ -24,6 +24,4 @@
 #' @author Diane Uschner \email{diane.uschner@@gmail.com}
 #' @references Uschner, D: Randomization based inference in the presence of selection bias. Submitted to Statistics in Medicine, 2020.
 #' @import randomizeR
-#' @import methods
-#' @import snow
 NULL
